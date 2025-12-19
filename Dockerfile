@@ -1,6 +1,6 @@
 # RunPod 공식 베이스 이미지 (Python, CUDA 세팅됨)
-FROM runpod/base:0.6.3-cuda11.8.0
-
+FROM runpod/base:1.0.3-cuda1281-ubuntu2404
+    
 # 1. ComfyUI 구동에 필요한 시스템 패키지 설치
 RUN apt-get update && apt-get install -y \
     git \
