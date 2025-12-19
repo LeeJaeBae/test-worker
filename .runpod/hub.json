@@ -7,7 +7,7 @@
   "config": {
     "runsOn": "GPU",
     "containerDiskInGb": 5,
-    "gpuIds": "ADA_32_PRO",
+    "gpuIds": "ADA_24",
     "gpuCount": 1,
     "allowedCudaVersions": [
       "12.8",
