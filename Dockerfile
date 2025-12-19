@@ -21,6 +21,7 @@ COPY handler.py /handler.py
 
 # 4. 권한 설정 및 윈도우 줄바꿈 제거 (필수!)
 RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
+RUN sed -i 's/\r$//' /handler.py && chmod +x /handler.py
 
 # 5. 시작 명령어 (핸들러만 실행하면 안 되고, start.sh를 실행해야 함)
 CMD ["/start.sh"]
