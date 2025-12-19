@@ -56,7 +56,7 @@ if [ "$VENV_FOUND" = false ]; then
 fi
 
 # 5. ComfyUI 백그라운드 실행
-echo "🚀 Starting ComfyUI Server..."
+echo "🚀 Starting ComfyUI Server...."
 python main.py --listen 0.0.0.0 --port 8188 --disable-auto-launch &
 
 # 6. 부팅 대기 (10초)
