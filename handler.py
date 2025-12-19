@@ -55,9 +55,9 @@ DEFAULT_WORKFLOW = {
           "458",
           0
         ],
-        "save_metadata": false,
-        "pingpong": false,
-        "save_output": true,
+        "save_metadata": False,
+        "pingpong": False,
+        "save_output": True,
         "images": [
           "709",
           0
@@ -103,22 +103,22 @@ DEFAULT_WORKFLOW = {
           "type": "PowerLoraLoaderHeaderWidget"
         },
         "lora_1": {
-          "on": false,
+          "on": False,
           "lora": "NSFW-22-L-e8.safetensors",
           "strength": 1.2
         },
         "lora_2": {
-          "on": true,
+          "on": True,
           "lora": "I2V-WAN2.2-EdibleAnus-LowNoise-1.1_-000060.safetensors",
           "strength": 1
         },
         "lora_3": {
-          "on": false,
+          "on": False,
           "lora": "PussyLoRA_LowNoise_Wan2.2_HearmemanAI.safetensors",
           "strength": 1
         },
         "lora_4": {
-          "on": false,
+          "on": False,
           "lora": "Wan22_CumV2_Low.safetensors",
           "strength": 1
         },
@@ -165,22 +165,22 @@ DEFAULT_WORKFLOW = {
           "type": "PowerLoraLoaderHeaderWidget"
         },
         "lora_1": {
-          "on": false,
+          "on": False,
           "lora": "NSFW-22-H-e8.safetensors",
           "strength": 1.2
         },
         "lora_2": {
-          "on": true,
+          "on": True,
           "lora": "I2V-WAN2.2-EdibleAnus-HighNoise-1.1_-000050.safetensors",
           "strength": 1
         },
         "lora_3": {
-          "on": false,
+          "on": False,
           "lora": "PussyLoRA_HighNoise_Wan2.2_HearmemanAI.safetensors",
           "strength": 1
         },
         "lora_4": {
-          "on": false,
+          "on": False,
           "lora": "Wan22_CumV2_High.safetensors",
           "strength": 1
         },
