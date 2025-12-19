@@ -11,6 +11,11 @@ CANDIDATES=(
 
 COMFYUI_DIR=""
 
+# Handler는 runpod 패키지가 필요하지만, ComfyUI용 venv에는 없을 수 있음.
+# 그래서 "시스템 파이썬" 경로를 미리 저장해두고, handler는 시스템 파이썬으로 실행한다.
+SYSTEM_PYTHON="$(command -v python3 || command -v python)"
+echo "🐍 System Python: $SYSTEM_PYTHON"
+
 # 2. 경로 탐색 루프
 for path in "${CANDIDATES[@]}"; do
     if [ -d "$path" ]; then
@@ -59,8 +64,10 @@ else
 
     # venv 패키지 확인
     VENV_PACKAGES_OK=""
-    # ComfyUI requires torchsde for k-diffusion samplers; missing it will crash ComfyUI at startup.
-    python -c "import torch, einops, torchsde; from PIL import Image; print('venv packages OK')" 2>/dev/null && VENV_PACKAGES_OK="yes"
+    # ComfyUI may hard-import optional deps at startup; missing them will crash early.
+    # - torchsde: required by k-diffusion samplers
+    # - av (PyAV): required by comfy_api video input types in some ComfyUI versions
+    python -c "import torch, einops, torchsde, av; from PIL import Image; print('venv packages OK')" 2>/dev/null && VENV_PACKAGES_OK="yes"
 
     if [ -n "$VENV_PACKAGES_OK" ]; then
         echo "✅ .venv-cu128 is ready - using venv packages"
@@ -68,20 +75,39 @@ else
     else
         echo "❌ .venv-cu128 incomplete - installing to venv..."
         echo "📦 Installing packages to .venv-cu128..."
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --quiet
+        # Base image is CUDA 12.8.x; prefer cu128 wheels when we have to install torch into venv.
+        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128 --quiet
         pip install einops Pillow numpy scipy --quiet
         pip install huggingface_hub transformers diffusers accelerate --quiet
         pip install torchsde --quiet
+        pip install av --quiet || {
+            echo "⚠️  'pip install av' failed. Trying to install system deps for PyAV build..."
+            apt-get update && apt-get install -y \
+                pkg-config \
+                libavformat-dev \
+                libavcodec-dev \
+                libavdevice-dev \
+                libavutil-dev \
+                libswscale-dev \
+                libswresample-dev \
+            && rm -rf /var/lib/apt/lists/*
+            pip install av --quiet || {
+                echo "❌ Failed installing 'av' (PyAV)"
+                exit 1
+            }
+        }
 
         echo "🔍 Verifying venv installation..."
         python -c "
 import torch, einops
 import torchsde
+import av
 from PIL import Image
 print(f'✅ Torch {torch.__version__} installed (CUDA: {torch.cuda.is_available()})')
 print('✅ einops installed')
 print('✅ PIL installed')
 print('✅ torchsde installed')
+print('✅ av installed')
 print('🎉 .venv-cu128 ready!')
 " || {
             echo "❌ Installation failed"
@@ -138,4 +164,4 @@ echo "✅ ComfyUI HTTP is reachable."
 
 # 7. 핸들러 실행
 echo "🚀 Starting RunPod Handler..."
-python -u /handler.py
+"$SYSTEM_PYTHON" -u /handler.py
