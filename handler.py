@@ -39,6 +39,854 @@ COMFY_HOST = "127.0.0.1:8188"
 # see https://docs.runpod.io/docs/handler-additional-controls#refresh-worker
 REFRESH_WORKER = os.environ.get("REFRESH_WORKER", "false").lower() == "true"
 
+# Default workflow for video generation with nudity removal and WAN video creation
+DEFAULT_WORKFLOW = {
+    "63": {
+      "inputs": {
+        "frame_rate": [
+          "457",
+          0
+        ],
+        "loop_count": 0,
+        "filename_prefix": "video/%date:yyyy-MM-dd%/%date:hhmmss%",
+        "format": "video/h265-mp4",
+        "pix_fmt": "yuv420p10le",
+        "crf": [
+          "458",
+          0
+        ],
+        "save_metadata": false,
+        "pingpong": false,
+        "save_output": true,
+        "images": [
+          "709",
+          0
+        ]
+      },
+      "class_type": "VHS_VideoCombine",
+      "_meta": {
+        "title": "Video Combine 🎥🅥🅗🅢"
+      }
+    },
+    "419": {
+      "inputs": {
+        "ckpt_name": "DasiwaWAN22I2V14BLightspeedV7_midnightflirtHighV7.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "Load Checkpoint High"
+      }
+    },
+    "420": {
+      "inputs": {
+        "ckpt_name": "DasiwaWAN22I2V14BLightspeedV7_midnightflirtLowV7.safetensors"
+      },
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "Load Checkpoint Low"
+      }
+    },
+    "421": {
+      "inputs": {
+        "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "type": "wan",
+        "device": "default"
+      },
+      "class_type": "CLIPLoader",
+      "_meta": {
+        "title": "CLIP 로드"
+      }
+    },
+    "422": {
+      "inputs": {
+        "PowerLoraLoaderHeaderWidget": {
+          "type": "PowerLoraLoaderHeaderWidget"
+        },
+        "lora_1": {
+          "on": false,
+          "lora": "NSFW-22-L-e8.safetensors",
+          "strength": 1.2
+        },
+        "lora_2": {
+          "on": true,
+          "lora": "I2V-WAN2.2-EdibleAnus-LowNoise-1.1_-000060.safetensors",
+          "strength": 1
+        },
+        "lora_3": {
+          "on": false,
+          "lora": "PussyLoRA_LowNoise_Wan2.2_HearmemanAI.safetensors",
+          "strength": 1
+        },
+        "lora_4": {
+          "on": false,
+          "lora": "Wan22_CumV2_Low.safetensors",
+          "strength": 1
+        },
+        "➕ Add Lora": "",
+        "model": [
+          "716",
+          0
+        ]
+      },
+      "class_type": "Power Lora Loader (rgthree)",
+      "_meta": {
+        "title": "Power Lora Loader (rgthree)"
+      }
+    },
+    "425": {
+      "inputs": {
+        "shift": 5,
+        "model": [
+          "436",
+          0
+        ]
+      },
+      "class_type": "ModelSamplingSD3",
+      "_meta": {
+        "title": "Sigma Shift High"
+      }
+    },
+    "426": {
+      "inputs": {
+        "shift": 5,
+        "model": [
+          "422",
+          0
+        ]
+      },
+      "class_type": "ModelSamplingSD3",
+      "_meta": {
+        "title": "Sigma Shift Low"
+      }
+    },
+    "436": {
+      "inputs": {
+        "PowerLoraLoaderHeaderWidget": {
+          "type": "PowerLoraLoaderHeaderWidget"
+        },
+        "lora_1": {
+          "on": false,
+          "lora": "NSFW-22-H-e8.safetensors",
+          "strength": 1.2
+        },
+        "lora_2": {
+          "on": true,
+          "lora": "I2V-WAN2.2-EdibleAnus-HighNoise-1.1_-000050.safetensors",
+          "strength": 1
+        },
+        "lora_3": {
+          "on": false,
+          "lora": "PussyLoRA_HighNoise_Wan2.2_HearmemanAI.safetensors",
+          "strength": 1
+        },
+        "lora_4": {
+          "on": false,
+          "lora": "Wan22_CumV2_High.safetensors",
+          "strength": 1
+        },
+        "➕ Add Lora": "",
+        "model": [
+          "715",
+          0
+        ]
+      },
+      "class_type": "Power Lora Loader (rgthree)",
+      "_meta": {
+        "title": "Power Lora Loader (rgthree)"
+      }
+    },
+    "446": {
+      "inputs": {
+        "value": 1
+      },
+      "class_type": "PrimitiveFloat",
+      "_meta": {
+        "title": "CFG"
+      }
+    },
+    "447": {
+      "inputs": {
+        "value": 2
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "Step to swap"
+      }
+    },
+    "449": {
+      "inputs": {
+        "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走",
+        "clip": [
+          "421",
+          0
+        ]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Negative (standard WAN)"
+      }
+    },
+    "451": {
+      "inputs": {
+        "text": "色调艳丽，过曝，静态，细节模糊不清，字幕，风格，作品，画作，画面，静止，整体发灰，最差质量，低质量，JPEG压缩残留，丑陋的，残缺的，多余的手指，画得不好的手部，画得不好的脸部，畸形的，毁容的，形态畸形deformed hands, deformed fingers, extra fingers, missing fingers, fused fingers, mutated hands, bad anatomy, unnatural entry, sudden appearance, jerky motion, penis in mouth, oral contact的肢体，手指融合，静止不动的画面，杂乱的背景，三条腿，背景人很多，倒着走, futanari, dickgirl, futanari penis, female with penis, hermaphrodite, intersex, shemale, ladyboy, dual genitalia, penis on female, balls on woman, male genitals on female, extra penis, gender mix, transgender genitalia, newhalf, trap penis",
+        "clip": [
+          "421",
+          0
+        ]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Negative"
+      }
+    },
+    "452": {
+      "inputs": {
+        "text": "First-person POV scene with a nude woman (main character from reference), realistic proportions, detailed anatomy. She starts standing facing the camera directly, full body visible in wide shot, seductive smile with intense eye contact. Slowly and teasingly turns around to face away from the camera, hips swaying gently. Then gradually bends forward at the waist, arching her back, spreading legs slightly for balance, explicitly revealing and showing her visible genitals and anus from behind in close-up detail as she bends deeper. Hands on knees or thighs for support, head turned slightly to look back at camera with playful or inviting expression if visible. Smooth slow motion, natural lighting, bedroom setting, high detail anatomy and skin texture, face not obscured or covered, 15-20 seconds. drip water from pussy",
+        "clip": [
+          "421",
+          0
+        ]
+      },
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "CLIP 텍스트 인코딩 (프롬프트)"
+      }
+    },
+    "455": {
+      "inputs": {
+        "vae_name": "wan_2.1_vae.safetensors"
+      },
+      "class_type": "VAELoader",
+      "_meta": {
+        "title": "VAE 로드"
+      }
+    },
+    "457": {
+      "inputs": {
+        "value": 16
+      },
+      "class_type": "PrimitiveFloat",
+      "_meta": {
+        "title": "FPS"
+      }
+    },
+    "458": {
+      "inputs": {
+        "value": 19
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "CRF"
+      }
+    },
+    "470": {
+      "inputs": {
+        "seed": -1
+      },
+      "class_type": "Seed (rgthree)",
+      "_meta": {
+        "title": "Seed (rgthree)"
+      }
+    },
+    "524": {
+      "inputs": {
+        "value": 113
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "Frames"
+      }
+    },
+    "534": {
+      "inputs": {
+        "value": 560
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "Width - start resolution"
+      }
+    },
+    "535": {
+      "inputs": {
+        "value": 720
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "Height - start resolution"
+      }
+    },
+    "570": {
+      "inputs": {
+        "value": 4
+      },
+      "class_type": "PrimitiveInt",
+      "_meta": {
+        "title": "Steps_total"
+      }
+    },
+    "621": {
+      "inputs": {
+        "any_01": [
+          "687",
+          0
+        ]
+      },
+      "class_type": "Any Switch (rgthree)",
+      "_meta": {
+        "title": "Any Switch (rgthree)"
+      }
+    },
+    "644": {
+      "inputs": {
+        "options": "Intermediate and Utility",
+        "filenames": [
+          "63",
+          0
+        ]
+      },
+      "class_type": "VHS_PruneOutputs",
+      "_meta": {
+        "title": "Prune Outputs 🎥🅥🅗🅢"
+      }
+    },
+    "652": {
+      "inputs": {
+        "nag_scale": 11,
+        "nag_alpha": 0.25,
+        "nag_tau": 2.373,
+        "input_type": "default",
+        "model": [
+          "426",
+          0
+        ],
+        "conditioning": [
+          "654",
+          0
+        ]
+      },
+      "class_type": "WanVideoNAG",
+      "_meta": {
+        "title": "WanVideoNAG Low"
+      }
+    },
+    "653": {
+      "inputs": {
+        "nag_scale": 11,
+        "nag_alpha": 0.25,
+        "nag_tau": 2.373,
+        "input_type": "default",
+        "model": [
+          "425",
+          0
+        ],
+        "conditioning": [
+          "654",
+          0
+        ]
+      },
+      "class_type": "WanVideoNAG",
+      "_meta": {
+        "title": "WanVideoNAG High"
+      }
+    },
+    "654": {
+      "inputs": {
+        "conditioning_to": [
+          "449",
+          0
+        ],
+        "conditioning_from": [
+          "451",
+          0
+        ]
+      },
+      "class_type": "ConditioningConcat",
+      "_meta": {
+        "title": "조건 (연결)"
+      }
+    },
+    "684": {
+      "inputs": {
+        "width": 1280,
+        "height": 1280,
+        "resize_mode": "Keep AR",
+        "divisible_by": 16,
+        "max_batch_size": 3,
+        "sinc_window": 3,
+        "pad_color": "0, 0, 0",
+        "crop_position": "center",
+        "precision": "fp32",
+        "image": [
+          "763",
+          0
+        ]
+      },
+      "class_type": "BatchResizeWithLanczos",
+      "_meta": {
+        "title": "🐇 Batch Resize w/ Lanczos"
+      }
+    },
+    "685": {
+      "inputs": {
+        "width": [
+          "534",
+          0
+        ],
+        "height": [
+          "535",
+          0
+        ],
+        "length": [
+          "524",
+          0
+        ],
+        "batch_size": 1,
+        "positive": [
+          "452",
+          0
+        ],
+        "negative": [
+          "451",
+          0
+        ],
+        "vae": [
+          "455",
+          0
+        ],
+        "start_image": [
+          "684",
+          0
+        ]
+      },
+      "class_type": "WanImageToVideo",
+      "_meta": {
+        "title": "WAN 비디오 생성 (이미지 → 비디오)"
+      }
+    },
+    "686": {
+      "inputs": {
+        "add_noise": "disable",
+        "noise_seed": [
+          "470",
+          0
+        ],
+        "steps": [
+          "570",
+          0
+        ],
+        "cfg": [
+          "446",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": [
+          "447",
+          0
+        ],
+        "end_at_step": 10000,
+        "return_with_leftover_noise": "disable",
+        "model": [
+          "652",
+          0
+        ],
+        "positive": [
+          "685",
+          0
+        ],
+        "negative": [
+          "685",
+          1
+        ],
+        "latent_image": [
+          "688",
+          0
+        ]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {
+        "title": "KSampler (Low)"
+      }
+    },
+    "687": {
+      "inputs": {
+        "samples": [
+          "686",
+          0
+        ],
+        "vae": [
+          "455",
+          0
+        ]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "VAE 디코드"
+      }
+    },
+    "688": {
+      "inputs": {
+        "add_noise": "enable",
+        "noise_seed": [
+          "470",
+          0
+        ],
+        "steps": [
+          "570",
+          0
+        ],
+        "cfg": [
+          "446",
+          0
+        ],
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": [
+          "447",
+          0
+        ],
+        "return_with_leftover_noise": "enable",
+        "model": [
+          "653",
+          0
+        ],
+        "positive": [
+          "685",
+          0
+        ],
+        "negative": [
+          "685",
+          1
+        ],
+        "latent_image": [
+          "685",
+          2
+        ]
+      },
+      "class_type": "KSamplerAdvanced",
+      "_meta": {
+        "title": "KSampler (High)"
+      }
+    },
+    "709": {
+      "inputs": {
+        "width": [
+          "710",
+          0
+        ],
+        "height": [
+          "711",
+          0
+        ],
+        "resize_mode": "Keep AR",
+        "divisible_by": 16,
+        "max_batch_size": 3,
+        "sinc_window": 3,
+        "pad_color": "0, 0, 0",
+        "crop_position": "center",
+        "precision": "fp32",
+        "image": [
+          "621",
+          0
+        ]
+      },
+      "class_type": "BatchResizeWithLanczos",
+      "_meta": {
+        "title": "🐇 Batch Resize w/ Lanczos"
+      }
+    },
+    "710": {
+      "inputs": {
+        "a": [
+          "534",
+          0
+        ],
+        "b": 2,
+        "operation": "multiply"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math width"
+      }
+    },
+    "711": {
+      "inputs": {
+        "a": [
+          "535",
+          0
+        ],
+        "b": 2,
+        "operation": "multiply"
+      },
+      "class_type": "easy mathInt",
+      "_meta": {
+        "title": "Math height"
+      }
+    },
+    "715": {
+      "inputs": {
+        "any_01": [
+          "419",
+          0
+        ]
+      },
+      "class_type": "Any Switch (rgthree)",
+      "_meta": {
+        "title": "Any Switch (rgthree)"
+      }
+    },
+    "716": {
+      "inputs": {
+        "any_01": [
+          "420",
+          0
+        ]
+      },
+      "class_type": "Any Switch (rgthree)",
+      "_meta": {
+        "title": "Any Switch (rgthree)"
+      }
+    },
+    "728": {
+      "inputs": {
+        "image": "input_image.png"
+      },
+      "class_type": "LoadImage",
+      "_meta": {
+        "title": "이미지 로드"
+      }
+    },
+    "743": {
+      "inputs": {
+        "images": [
+          "763",
+          0
+        ]
+      },
+      "class_type": "PreviewImage",
+      "_meta": {
+        "title": "이미지 미리보기"
+      }
+    },
+    "759": {
+      "inputs": {
+        "strength": 1,
+        "model": [
+          "760",
+          0
+        ]
+      },
+      "class_type": "CFGNorm",
+      "_meta": {
+        "title": "CFGNorm"
+      }
+    },
+    "760": {
+      "inputs": {
+        "shift": 3,
+        "model": [
+          "777",
+          0
+        ]
+      },
+      "class_type": "ModelSamplingAuraFlow",
+      "_meta": {
+        "title": "모델 샘플링 (AuraFlow)"
+      }
+    },
+    "761": {
+      "inputs": {
+        "pixels": [
+          "765",
+          0
+        ],
+        "vae": [
+          "775",
+          0
+        ]
+      },
+      "class_type": "VAEEncode",
+      "_meta": {
+        "title": "VAE 인코드"
+      }
+    },
+    "762": {
+      "inputs": {
+        "prompt": "clothes, clothing, underwear, lingerie, bikini, swimsuit, bra, panties, shirt, dress, pants, fabric on body, covered genitals, censored, mosaic, bars, pixelated, blurred nudity, partial clothing, accessories covering body, deformed face, altered face, changed expression, background change, new background elements, pose change, cropped body, partial view, low quality, artifacts",
+        "clip": [
+          "776",
+          0
+        ],
+        "vae": [
+          "775",
+          0
+        ],
+        "image1": [
+          "765",
+          0
+        ]
+      },
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "TextEncodeQwenImageEditPlus"
+      }
+    },
+    "763": {
+      "inputs": {
+        "samples": [
+          "764",
+          0
+        ],
+        "vae": [
+          "775",
+          0
+        ]
+      },
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "VAE 디코드"
+      }
+    },
+    "764": {
+      "inputs": {
+        "seed": 926020317898849,
+        "steps": 4,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "denoise": 1,
+        "model": [
+          "759",
+          0
+        ],
+        "positive": [
+          "767",
+          0
+        ],
+        "negative": [
+          "762",
+          0
+        ],
+        "latent_image": [
+          "761",
+          0
+        ]
+      },
+      "class_type": "KSampler",
+      "_meta": {
+        "title": "KSampler"
+      }
+    },
+    "765": {
+      "inputs": {
+        "upscale_method": "area",
+        "megapixels": 1,
+        "image": [
+          "728",
+          0
+        ]
+      },
+      "class_type": "ImageScaleToTotalPixels",
+      "_meta": {
+        "title": "총 픽셀 수에 맞춰 이미지 크기 조정"
+      }
+    },
+    "767": {
+      "inputs": {
+        "prompt": "Edit the existing image precisely: Keep the main character's face, expression, features, makeup, hair, and head angle exactly the same as the original. Preserve the entire original background 100% unchanged - no alterations, additions, or removals. Maintain the exact same pose, body position, arm placement, stance, and camera angle as the original.\n\nRemove all clothing completely from the character, revealing full nudity with realistic skin continuing seamlessly underneath where clothes were. No clothing, underwear, accessories, or any fabric remains on the body. Ultra-detailed skin texture, pores, natural body contours, consistent lighting and shadows from the original image, photorealistic, high resolution, no artifacts on skin.",
+        "clip": [
+          "776",
+          0
+        ],
+        "vae": [
+          "775",
+          0
+        ],
+        "image1": [
+          "765",
+          0
+        ]
+      },
+      "class_type": "TextEncodeQwenImageEditPlus",
+      "_meta": {
+        "title": "TextEncodeQwenImageEditPlus"
+      }
+    },
+    "775": {
+      "inputs": {
+        "vae_name": "qwen_image_vae.safetensors"
+      },
+      "class_type": "VAELoader",
+      "_meta": {
+        "title": "VAE 로드"
+      }
+    },
+    "776": {
+      "inputs": {
+        "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "type": "qwen_image",
+        "device": "default"
+      },
+      "class_type": "CLIPLoader",
+      "_meta": {
+        "title": "CLIP 로드"
+      }
+    },
+    "777": {
+      "inputs": {
+        "lora_name": "Qwen-Edit-2509-Multiple-angles.safetensors",
+        "strength_model": 1,
+        "model": [
+          "778",
+          0
+        ]
+      },
+      "class_type": "LoraLoaderModelOnly",
+      "_meta": {
+        "title": "LoRA 로드 (모델 전용)"
+      }
+    },
+    "778": {
+      "inputs": {
+        "lora_name": "Qwen_Snofs_1_3.safetensors",
+        "strength_model": 0.7,
+        "model": [
+          "779",
+          0
+        ]
+      },
+      "class_type": "LoraLoaderModelOnly",
+      "_meta": {
+        "title": "LoRA 로드 (모델 전용)"
+      }
+    },
+    "779": {
+      "inputs": {
+        "lora_name": "Qwen-Image-Edit-2509-Lightning-4steps-V1.0-bf16.safetensors",
+        "strength_model": 1,
+        "model": [
+          "780",
+          0
+        ]
+      },
+      "class_type": "LoraLoaderModelOnly",
+      "_meta": {
+        "title": "LoRA 로드 (모델 전용)"
+      }
+    },
+    "780": {
+      "inputs": {
+        "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "weight_dtype": "default"
+      },
+      "class_type": "UNETLoader",
+      "_meta": {
+        "title": "확산 모델 로드"
+      }
+    }
+}
+
 # ---------------------------------------------------------------------------
 # Helper: quick reachability probe of ComfyUI HTTP endpoint (port 8188)
 # ---------------------------------------------------------------------------
@@ -149,10 +997,11 @@ def validate_input(job_input):
         except json.JSONDecodeError:
             return None, "Invalid JSON format in input"
 
-    # Validate 'workflow' in input
+    # Validate 'workflow' in input - use default if not provided
     workflow = job_input.get("workflow")
     if workflow is None:
-        return None, "Missing 'workflow' parameter"
+        print("worker-comfyui - No workflow provided, using default video generation workflow")
+        workflow = DEFAULT_WORKFLOW.copy()
 
     # Validate 'images' in input, if provided
     images = job_input.get("images")
@@ -164,6 +1013,14 @@ def validate_input(job_input):
                 None,
                 "'images' must be a list of objects with 'name' and 'image' keys",
             )
+
+    # If using default workflow and images are provided, update the LoadImage node
+    if workflow is DEFAULT_WORKFLOW and images and len(images) > 0:
+        # Update the LoadImage node (728) to use the first uploaded image
+        # The image will be uploaded and available as the first image's name
+        if "728" in workflow:
+            workflow["728"]["inputs"]["image"] = images[0]["name"]
+            print(f"worker-comfyui - Updated default workflow to use input image: {images[0]['name']}")
 
     # Return validated data and no error
     return {"workflow": workflow, "images": images}, None
