@@ -1,4 +1,5 @@
 # RunPod 공식 베이스 이미지 (Python, CUDA 세팅됨)
+# CUDA 12.8.1 - PyTorch cu121/cu126 호환됨
 FROM runpod/base:1.0.3-cuda1281-ubuntu2404
     
 # 1. ComfyUI 구동에 필요한 시스템 패키지 설치
