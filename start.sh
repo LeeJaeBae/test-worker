@@ -54,41 +54,30 @@ done
 if [ "$VENV_FOUND" = false ]; then
     echo "⚠️  WARNING: No VENV found. Using System Python."
 else
-    # 가상환경에서 필수 패키지 설치 상태 확인 (재설치는 최소화)
-    echo "🔍 Checking ComfyUI venv packages..."
+    # 서버리스 최적화: venv 우선 사용, 시스템 패키지 폴백
+    echo "🔍 Checking venv vs system packages..."
 
-    # 필수 패키지들 확인 및 설치
-    echo "🔍 Checking for PIL/Pillow..."
-    python -c "from PIL import Image; print('✅ PIL available')" 2>/dev/null || {
-        echo "❌ PIL not found in venv, installing..."
-        pip install Pillow
-    }
+    # venv 패키지 우선 확인
+    VENV_PACKAGES_OK=""
+    python -c "import torch, einops; from PIL import Image" 2>/dev/null && VENV_PACKAGES_OK="yes"
 
-    # ComfyUI-Manager 등 custom nodes에서 자주 사용하는 패키지들
-    echo "🔍 Checking for huggingface_hub..."
-    python -c "import huggingface_hub; print('✅ huggingface_hub available')" 2>/dev/null || {
-        echo "❌ huggingface_hub not found, installing..."
-        pip install huggingface_hub
-    }
-
-    echo "🔍 Checking for other common packages..."
-    python -c "import transformers, diffusers, accelerate; print('✅ ML packages available')" 2>/dev/null || {
-        echo "❌ Some ML packages missing, installing..."
-        pip install transformers diffusers accelerate
-    }
-
-    # ComfyUI의 torch/cuda 버전 확인 (필수 패키지)
-    echo "🔍 Checking torch installation..."
-    if python -c "import torch; print(f'✅ Torch {torch.__version__} available, CUDA: {torch.cuda.is_available()}')" 2>/dev/null; then
-        echo "✅ Torch ready - no installation needed"
+    if [ -n "$VENV_PACKAGES_OK" ]; then
+        echo "✅ Using .venv-cu128 packages (fastest)"
     else
-        echo "⚠️  Torch not found in .venv-cu128"
-        echo "💡 This venv might be incomplete. Consider reinstalling ComfyUI with proper dependencies."
-        echo "🔄 Attempting minimal torch install..."
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --quiet
-        python -c "import torch; print(f'✅ Torch {torch.__version__} installed')" || {
-            echo "❌ Torch installation failed - ComfyUI cannot run without torch"
-            exit 1
+        echo "ℹ️  .venv-cu128 incomplete, using system packages (Dockerfile installed)"
+        echo "🔍 Verifying system packages..."
+        python -c "
+import torch
+import einops
+from PIL import Image
+print(f'✅ Torch {torch.__version__} ready (CUDA: {torch.cuda.is_available()})')
+print('✅ einops ready')
+print('✅ PIL ready')
+print('🎉 System packages verified!')
+" || {
+            echo "❌ System packages also missing - emergency install"
+            pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --quiet
+            pip install einops Pillow --quiet
         }
     fi
 fi
@@ -96,6 +85,17 @@ fi
 # 5. ComfyUI 백그라운드 실행
 echo "🚀 Starting ComfyUI Server...."
 python main.py --listen 0.0.0.0 --port 8188 --disable-auto-launch &
+COMFYUI_PID=$!
+echo "📊 ComfyUI PID: $COMFYUI_PID"
+
+# 잠시 기다렸다가 상태 확인
+sleep 3
+if kill -0 $COMFYUI_PID 2>/dev/null; then
+    echo "✅ ComfyUI started successfully (PID: $COMFYUI_PID)"
+else
+    echo "❌ ComfyUI failed to start"
+    exit 1
+fi
 
 # 6. 부팅 대기 (10초)
 echo "⏳ Waiting 10s for boot..."
