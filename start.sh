@@ -54,30 +54,34 @@ done
 if [ "$VENV_FOUND" = false ]; then
     echo "⚠️  WARNING: No VENV found. Using System Python."
 else
-    # 서버리스 최적화: venv 우선 사용, 시스템 패키지 폴백
-    echo "🔍 Checking venv vs system packages..."
+    # .venv-cu128 우선 사용 (깔끔한 접근)
+    echo "🔍 Checking .venv-cu128 packages..."
 
-    # venv 패키지 우선 확인
+    # venv 패키지 확인
     VENV_PACKAGES_OK=""
-    python -c "import torch, einops; from PIL import Image" 2>/dev/null && VENV_PACKAGES_OK="yes"
+    python -c "import torch, einops; from PIL import Image; print('venv packages OK')" 2>/dev/null && VENV_PACKAGES_OK="yes"
 
     if [ -n "$VENV_PACKAGES_OK" ]; then
-        echo "✅ Using .venv-cu128 packages (fastest)"
+        echo "✅ .venv-cu128 is ready - using venv packages"
+        echo "🎉 Fast startup with complete venv!"
     else
-        echo "ℹ️  .venv-cu128 incomplete, using system packages (Dockerfile installed)"
-        echo "🔍 Verifying system packages..."
+        echo "❌ .venv-cu128 incomplete - installing to venv..."
+        echo "📦 Installing packages to .venv-cu128..."
+        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --quiet
+        pip install einops Pillow numpy scipy --quiet
+        pip install huggingface_hub transformers diffusers accelerate --quiet
+
+        echo "🔍 Verifying venv installation..."
         python -c "
-import torch
-import einops
+import torch, einops
 from PIL import Image
-print(f'✅ Torch {torch.__version__} ready (CUDA: {torch.cuda.is_available()})')
-print('✅ einops ready')
-print('✅ PIL ready')
-print('🎉 System packages verified!')
+print(f'✅ Torch {torch.__version__} installed (CUDA: {torch.cuda.is_available()})')
+print('✅ einops installed')
+print('✅ PIL installed')
+print('🎉 .venv-cu128 ready!')
 " || {
-            echo "❌ System packages also missing - emergency install"
-            pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --quiet
-            pip install einops Pillow --quiet
+            echo "❌ Installation failed"
+            exit 1
         }
     fi
 fi

@@ -11,28 +11,12 @@ RUN apt-get update && apt-get install -y \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. RunPod 핸들러 및 ComfyUI용 라이브러리 설치 (서버리스 최적화)
-# 서버리스 특성상 매번 컨테이너가 새로 시작되므로 빌드 시점에 설치하는 게 효율적
+# 2. RunPod 핸들러용 기본 라이브러리 설치
+# .venv-cu128를 우선 사용하므로 최소한만 설치
 RUN pip install --no-cache-dir \
     runpod \
     requests \
-    websocket-client \
-    torch>=2.0.0 \
-    torchvision>=0.15.0 \
-    torchaudio>=2.0.0 \
-    numpy>=1.24.0 \
-    scipy>=1.10.0 \
-    Pillow>=9.0.0 \
-    einops>=0.6.0 \
-    transformers>=4.25.0 \
-    safetensors>=0.4.0 \
-    aiohttp>=3.8.0 \
-    pyyaml>=6.0 \
-    tqdm>=4.64.0 \
-    psutil>=5.9.0 \
-    huggingface_hub \
-    diffusers \
-    accelerate
+    websocket-client
 
 # 3. 파일 복사
 # (로컬에 있는 start.sh와 handler.py를 이미지 안으로 넣음)
