@@ -12,6 +12,7 @@
     "gpuTypeId": "NVIDIA GeForce RTX 5090",
     "gpuCount": 1,
     "allowedCudaVersions": [
+      "12.8",
       "12.7",
       "12.6",
       "12.5",
