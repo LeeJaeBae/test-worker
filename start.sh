@@ -42,7 +42,7 @@ cd "$COMFYUI_DIR"
 # 4. 가상환경(VENV) 활성화 시도
 # 보통 같은 폴더 안에 .venv 또는 .venv-cu128 등으로 존재
 VENV_FOUND=false
-for venv_name in ".venv" ".venv-cu128" "venv"; do
+for venv_name in ".venv-cu128" ".venv" "venv"; do
     if [ -f "$COMFYUI_DIR/$venv_name/bin/activate" ]; then
         echo "✅ Activating VENV: $venv_name"
         source "$COMFYUI_DIR/$venv_name/bin/activate"
