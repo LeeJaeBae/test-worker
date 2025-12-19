@@ -53,6 +53,30 @@ done
 
 if [ "$VENV_FOUND" = false ]; then
     echo "⚠️  WARNING: No VENV found. Using System Python."
+else
+    # 가상환경에서 필수 패키지 설치 확인 및 설치
+    echo "🔧 Checking ComfyUI dependencies..."
+    if [ -f "$COMFYUI_DIR/requirements.txt" ]; then
+        echo "📦 Installing ComfyUI requirements..."
+        pip install -r "$COMFYUI_DIR/requirements.txt"
+    else
+        echo "⚠️  No requirements.txt found in ComfyUI directory"
+    fi
+
+    # PIL(Pillow)이 설치되어 있는지 확인하고 설치
+    echo "🔍 Checking for PIL/Pillow..."
+    python -c "from PIL import Image; print('✅ PIL available')" 2>/dev/null || {
+        echo "❌ PIL not found, installing..."
+        pip install Pillow
+    }
+
+    # 추가 필수 패키지들 확인 및 설치
+    echo "🔍 Checking for other essential packages..."
+    python -c "import torch, torchvision, numpy, scipy, einops; print('✅ Core packages available')" 2>/dev/null || {
+        echo "❌ Some packages missing, installing..."
+        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+        pip install numpy scipy einops transformers safetensors tqdm psutil
+    }
 fi
 
 # 5. ComfyUI 백그라운드 실행
