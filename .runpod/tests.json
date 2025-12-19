@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "basic_test",
+      "name": "connection_test",
       "input": {
         "name": "John Doe"
       },
@@ -9,17 +9,14 @@
     }
   ],
   "config": {
-    "gpuTypeId": "ADA_24",
+    "gpuTypeId": "A100_80GB", 
     "gpuCount": 1,
-    "allowedCudaVersions": [
-      "12.8",
-      "12.7",
-      "12.6",
-      "12.5",
-      "12.4",
-      "12.3",
-      "12.2",
-      "12.1"
+    "containerDiskInGb": 50,
+    "env": [
+      {
+        "key": "REFRESH_WORKER",
+        "value": "false"
+      }
     ]
   }
 }
