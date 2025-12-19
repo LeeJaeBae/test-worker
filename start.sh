@@ -54,28 +54,20 @@ done
 if [ "$VENV_FOUND" = false ]; then
     echo "⚠️  WARNING: No VENV found. Using System Python."
 else
-    # 가상환경에서 필수 패키지 설치 확인 및 설치
-    echo "🔧 Checking ComfyUI dependencies..."
-    if [ -f "$COMFYUI_DIR/requirements.txt" ]; then
-        echo "📦 Installing ComfyUI requirements..."
-        pip install -r "$COMFYUI_DIR/requirements.txt"
-    else
-        echo "⚠️  No requirements.txt found in ComfyUI directory"
-    fi
+    # 가상환경에서 필수 패키지 설치 상태 확인 (재설치는 최소화)
+    echo "🔍 Checking ComfyUI venv packages..."
 
-    # PIL(Pillow)이 설치되어 있는지 확인하고 설치
+    # PIL(Pillow)만 확인하고 설치 (다른 패키지들은 .venv에 이미 있을 것으로 가정)
     echo "🔍 Checking for PIL/Pillow..."
     python -c "from PIL import Image; print('✅ PIL available')" 2>/dev/null || {
-        echo "❌ PIL not found, installing..."
+        echo "❌ PIL not found in venv, installing..."
         pip install Pillow
     }
 
-    # 추가 필수 패키지들 확인 및 설치
-    echo "🔍 Checking for other essential packages..."
-    python -c "import torch, torchvision, numpy, scipy, einops; print('✅ Core packages available')" 2>/dev/null || {
-        echo "❌ Some packages missing, installing..."
-        pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-        pip install numpy scipy einops transformers safetensors tqdm psutil
+    # ComfyUI의 torch/cuda 버전이 맞는지 기본 확인
+    echo "🔍 Quick torch check..."
+    python -c "import torch; print(f'✅ Torch {torch.__version__} available')" 2>/dev/null || {
+        echo "⚠️  Torch check failed - venv might need attention"
     }
 fi
 
