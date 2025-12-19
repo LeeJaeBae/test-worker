@@ -9,7 +9,7 @@
     }
   ],
   "config": {
-    "gpuTypeId": "NVIDIA GeForce RTX 5090",
+    "gpuTypeId": "ADA_24",
     "gpuCount": 1,
     "allowedCudaVersions": [
       "12.8",
