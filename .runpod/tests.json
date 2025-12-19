@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "connection_test",
+      "name": "basic_test",
       "input": {
         "name": "John Doe"
       },
@@ -9,14 +9,16 @@
     }
   ],
   "config": {
-    "gpuTypeId": "A100_80GB", 
+    "gpuTypeId": "NVIDIA GeForce RTX 4090",
     "gpuCount": 1,
-    "containerDiskInGb": 50,
-    "env": [
-      {
-        "key": "REFRESH_WORKER",
-        "value": "false"
-      }
+    "allowedCudaVersions": [
+      "12.7",
+      "12.6",
+      "12.5",
+      "12.4",
+      "12.3",
+      "12.2",
+      "12.1"
     ]
   }
 }
